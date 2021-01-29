@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 
 GAMES = {
+    'Trine': ['DD-TRINE-ULTIMATE-COLLECTION/trine-ultimate-colection'],
     'Trine 4': ['DD-MG-TRINE-4-THE-NIGHTMARE-PRINCE/trine-4-the-nightmare-prince']
 }
 
@@ -21,7 +22,7 @@ class Gamersgate:
                 content = bs_content.find('div', { 'id': 'PP_data_main' })
 
                 name_from_site = content.find('div', { 'class': 'ttl' }).find('h1').getText().strip()
-                prices[game][name_from_site] = {}
+                prices[game][name_from_site] = { 'url': self.url + url }
 
                 divs = content.find_all('div')
                 discount = None

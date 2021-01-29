@@ -5,14 +5,12 @@ from finder.platforms.humble import Humble
 from finder.platforms.gamersgate import Gamersgate
 
 def run():
-    steam = Steam().run()
-    # gog = Gog().run()
-    # fanatical = Fanatical().run()
-    # humble = Humble().run()
-    # gamersgate = Gamersgate().run()
+    prices = {}
+    prices['steam'] = Steam().run()
+    prices['gog'] = Gog().run()
+    prices['gamersgate'] = Gamersgate().run()
 
-    print(steam)
-    # print(gog)
-    # print(fanatical)
-    # print(humble)
-    # print(gamersgate)
+    # prices['fanatical'] = Fanatical().run()
+    # prices['humble'] = Humble().run()
+
+    print(prices)
