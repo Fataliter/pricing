@@ -2,44 +2,44 @@ import requests
 from bs4 import BeautifulSoup as bs
 
 GAMES = {
-    'Trine': ['DD-TRINE-ULTIMATE-COLLECTION/trine-ultimate-colection'],
-    'Trine 4': ['DD-MG-TRINE-4-THE-NIGHTMARE-PRINCE/trine-4-the-nightmare-prince']
+    'Trine Ultimate Collection': 'DD-TRINE-ULTIMATE-COLLECTION/trine-ultimate-colection',
+    'Trine 4: The Nightmare Prince': 'DD-MG-TRINE-4-THE-NIGHTMARE-PRINCE/trine-4-the-nightmare-prince'
 }
 
 
 class Gamersgate:
 
-    def __init__(self):
+    def __init__(self, prices):
         self.url = 'https://www.gamersgate.com/'
+        self.prices = prices
 
     def run(self):
-        prices = {}
-        for game, game_urls in GAMES.items():
-            prices[game] = {}
-            for url in game_urls:
-                response = requests.get(self.url + url)
-                bs_content = bs(response.text, "html.parser")
-                content = bs_content.find('div', { 'id': 'PP_data_main' })
+        for game, game_url in GAMES.items():
+            if game not in self.prices : self.prices[game] = []
+            price_obj = {'url': self.url + game_url, 'platform': 'gamersgate' }
 
-                name_from_site = content.find('div', { 'class': 'ttl' }).find('h1').getText().strip()
-                prices[game][name_from_site] = { 'url': self.url + url }
+            response = requests.get(self.url + game_url)
+            bs_content = bs(response.text, "html.parser")
+            content = bs_content.find('div', { 'id': 'PP_data_main' })
 
-                divs = content.find_all('div')
-                discount = None
-                for div in divs:
-                    if not div.has_attr('class'):
-                        discount = div
-                        break
+            divs = content.find_all('div')
+            discount = None
+            for div in divs:
+                if not div.has_attr('class'):
+                    discount = div
+                    break
 
-                if discount is not None:
-                    prices[game][name_from_site]['dsc'] = {
-                        'pct': discount.find_all('span')[-1].getText().strip().replace("\xa0", ''),
-                        'original_price': discount.find('span', { 'class': 'bold white' }).getText().strip().replace("\xa0", ''),
-                        'final_price': content.find('div', {'class': 'price_price'}).find('span').getText().strip().replace("\xa0", '')
-                    }
-                else:
-                    prices[game][name_from_site]['orig'] = {
-                        'original_price': content.find('div', {'class': 'price_price'}).find('span').getText().strip().replace("\xa0", '')
-                    }
+            if discount is not None:
+                price_obj['dsc'] = {
+                    'pct': discount.find_all('span')[-1].getText().strip().replace("\xa0", ''),
+                    'original_price': discount.find('span', { 'class': 'bold white' }).getText().strip().replace("\xa0", ''),
+                    'final_price': content.find('div', {'class': 'price_price'}).find('span').getText().strip().replace("\xa0", '')
+                }
+            else:
+                price_obj['orig'] = {
+                    'original_price': content.find('div', {'class': 'price_price'}).find('span').getText().strip().replace("\xa0", '')
+                }
 
-        return prices
+            self.prices[game].append(price_obj)
+
+        return self.prices

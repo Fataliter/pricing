@@ -4,13 +4,17 @@ from finder.platforms.fanatical import Fanatical
 from finder.platforms.humble import Humble
 from finder.platforms.gamersgate import Gamersgate
 
+from finder.operations.calculator import Calculator
+
 def run():
     prices = {}
-    prices['steam'] = Steam().run()
-    prices['gog'] = Gog().run()
-    prices['gamersgate'] = Gamersgate().run()
+    prices = Steam(prices).run()
+    prices = Gog(prices).run()
+    prices = Gamersgate(prices).run()
 
-    # prices['fanatical'] = Fanatical().run()
-    # prices['humble'] = Humble().run()
+    # prices = Fanatical(prices).run()
+    # prices = Humble(prices).run()
 
-    print(prices)
+    # print(prices)
+    Calculator(prices).run()
+
